@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const redditData = require('./data.json');
+
+app.use(express.static(path.join(__dirname, 'public'))
 
 app.set('view engine', 'ejs');
 // instead of using my working directory, 
@@ -12,14 +15,27 @@ app.get('/', (req, res) => {
     res.render('home')
 })
 
-app.get('/r/:subreddit', (req, res) => {
-    const { subreddit } = req.params;
-    res.render('subreddit', { subreddit });
+app.get('/loops', (req, res) => {
+    const cats = [
+        'Blue', 'Rocket', 'Monty', 'Stephaine', 'Winston'
+    ]
+    res.render('loops', { cats })
 })
 
-app.get('/rand', (req, res) => {
+app.get('/r/:subreddit', (req, res) => {
+    const { subreddit } = req.params;
+    const data = redditData[subreddit];
+    if (data) {
+        res.render('subreddit', { ...data });
+    } else {
+        res.render('notFound', { subreddit })
+    }
+    
+})
+
+app.get('/conditional', (req, res) => {
     const num = Math.floor(Math.random() * 10) + 1
-    res.render('random', { num })
+    res.render('conditional', { num })
 })
 
 app.listen(3000, () => {
